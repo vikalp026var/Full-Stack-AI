@@ -1,0 +1,35 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    padding-top: 50px;
+}
+
+.fixed {
+    background-color: #f0f0f0;
+    height: 50px;
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    position: fixed;
+    color: green;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.fixed-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 30px;
+    background-color: green;
+    color: white;
+    border: green 2px solid;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    
+}

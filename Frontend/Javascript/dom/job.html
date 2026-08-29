@@ -1,0 +1,559 @@
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+  
+    :root{
+      --bg:#0a0d0f;
+      --panel:#12161a;
+      --panel-2:#171c21;
+      --line:#232b31;
+      --amber:#f2a53c;
+      --amber-dim:#8a6a35;
+      --cyan:#5fd6c9;
+      --text:#e7ecef;
+      --text-dim:#8b959c;
+      --red:#e2665a;
+      --green:#6fbf7a;
+    }
+    *{box-sizing:border-box;}
+    #jr-root{
+      background:var(--bg);
+      color:var(--text);
+      font-family:'IBM Plex Sans',sans-serif;
+      border:1px solid var(--line);
+      border-radius:6px;
+      overflow:hidden;
+      min-height:600px;
+    }
+    .mono{font-family:'IBM Plex Mono',monospace;}
+  
+    /* ticker */
+    .jr-ticker-wrap{
+      background:#000; border-bottom:1px solid var(--line); overflow:hidden;
+      white-space:nowrap; position:relative; height:28px;
+    }
+    .jr-ticker{
+      display:inline-block; padding-left:100%;
+      animation:jr-scroll 28s linear infinite;
+      font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.5px;
+      color:var(--amber-dim); line-height:28px;
+    }
+    @keyframes jr-scroll{ 0%{transform:translateX(0);} 100%{transform:translateX(-100%);} }
+    .jr-ticker span{ margin-right:28px; }
+    .jr-ticker .hot{ color:var(--amber); }
+  
+    .jr-header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px; border-bottom:1px solid var(--line);
+    }
+    .jr-title{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; letter-spacing:1px; color:var(--text); }
+    .jr-title .blip{ color:var(--amber); }
+    .jr-sub{ font-size:11px; color:var(--text-dim); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  
+    .jr-btn{
+      font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600;
+      background:transparent; border:1px solid var(--amber-dim); color:var(--amber);
+      padding:7px 14px; border-radius:3px; cursor:pointer; letter-spacing:0.5px;
+      transition:all .15s ease;
+    }
+    .jr-btn:hover{ background:rgba(242,165,60,0.1); border-color:var(--amber); }
+    .jr-btn:disabled{ opacity:0.4; cursor:default; }
+    .jr-btn.secondary{ border-color:var(--line); color:var(--text-dim); }
+    .jr-btn.secondary:hover{ border-color:var(--cyan); color:var(--cyan); background:rgba(95,214,201,0.06); }
+  
+    .jr-body{ display:flex; }
+    .jr-side{
+      width:260px; border-right:1px solid var(--line); padding:16px;
+      background:var(--panel); flex-shrink:0;
+    }
+    .jr-side h4{
+      font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-dim);
+      letter-spacing:1px; text-transform:uppercase; margin:0 0 8px 0;
+    }
+    .jr-company-row{
+      display:flex; align-items:center; justify-content:space-between;
+      font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:5px 0;
+      border-bottom:1px solid #1a2025;
+    }
+    .jr-company-row .status{ font-size:9px; padding:1px 5px; border-radius:2px; }
+    .status.ok{ color:var(--green); }
+    .status.err{ color:var(--red); }
+    .status.idle{ color:var(--text-dim); }
+    .jr-add-row{ display:flex; gap:4px; margin-top:10px; }
+    .jr-add-row input, .jr-add-row select{
+      background:var(--bg); border:1px solid var(--line); color:var(--text);
+      font-family:'IBM Plex Mono',monospace; font-size:11px; padding:5px 6px; border-radius:3px;
+      width:100%;
+    }
+    .jr-remove{ cursor:pointer; color:var(--text-dim); font-size:13px; }
+    .jr-remove:hover{ color:var(--red); }
+  
+    .jr-main{ flex:1; padding:16px 18px; min-width:0; }
+    .jr-controls{ display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap; }
+    .jr-controls input[type=text]{
+      background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+      font-family:'IBM Plex Mono',monospace; font-size:12px; padding:8px 10px; border-radius:3px;
+      flex:1; min-width:160px;
+    }
+    .jr-stat{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); }
+    .jr-stat b{ color:var(--amber); }
+    .jr-check{
+      font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim);
+      display:flex; align-items:center; gap:6px; white-space:nowrap; cursor:pointer;
+    }
+    .jr-check input{ accent-color:var(--amber); }
+    .jr-chips{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+    .jr-chip{
+      font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:0.3px;
+      border:1px solid var(--line); color:var(--text-dim); padding:5px 10px; border-radius:14px;
+      cursor:pointer; user-select:none; transition:all .15s ease;
+    }
+    .jr-chip.active{ border-color:var(--cyan); color:var(--cyan); background:rgba(95,214,201,0.08); }
+    .jr-badge{
+      font-family:'IBM Plex Mono',monospace; font-size:9px; padding:2px 6px; border-radius:2px;
+      border:1px solid var(--amber-dim); color:var(--amber-dim); margin-left:8px;
+    }
+    .jr-badge.senior-flag{ border-color:var(--red); color:var(--red); }
+    .jr-mega-row{
+      display:flex; align-items:center; justify-content:space-between;
+      font-family:'IBM Plex Mono',monospace; font-size:11.5px; padding:6px 0;
+      border-bottom:1px solid #1a2025;
+    }
+    .jr-mega-row a{ color:var(--cyan); text-decoration:none; font-size:10.5px; }
+    .jr-mega-row a:hover{ text-decoration:underline; }
+  
+    .jr-empty{
+      text-align:center; padding:50px 20px; color:var(--text-dim);
+      font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.8;
+    }
+  
+    .jr-card{
+      background:var(--panel-2); border:1px solid var(--line); border-radius:5px;
+      padding:14px 16px; margin-bottom:10px;
+    }
+    .jr-card.applied{ border-color:var(--green); }
+    .jr-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+    .jr-job-title{ font-size:14px; font-weight:600; color:var(--text); }
+    .jr-job-meta{
+      font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--amber);
+      margin-top:3px; letter-spacing:0.3px;
+    }
+    .jr-job-meta .loc{ color:var(--cyan); margin-left:8px; }
+    .jr-card-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+    .jr-applied-tag{
+      font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--green);
+      border:1px solid var(--green); padding:5px 10px; border-radius:3px;
+    }
+    .jr-link{ color:var(--cyan); text-decoration:none; font-family:'IBM Plex Mono',monospace; font-size:11px; }
+    .jr-link:hover{ text-decoration:underline; }
+  
+    .jr-draft{
+      margin-top:10px; background:var(--bg); border:1px solid var(--line); border-radius:4px;
+      padding:10px 12px; font-size:12.5px; line-height:1.55; color:var(--text-dim);
+      white-space:pre-wrap;
+    }
+    .jr-draft-label{ font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--amber-dim); letter-spacing:1px; margin-bottom:6px; text-transform:uppercase; }
+  
+    textarea.jr-profile{
+      width:100%; height:140px; background:var(--bg); border:1px solid var(--line); color:var(--text);
+      font-family:'IBM Plex Mono',monospace; font-size:11px; border-radius:3px; padding:8px; resize:vertical;
+    }
+  
+    .jr-scan-line{
+      height:2px; background:linear-gradient(90deg, transparent, var(--amber), transparent);
+      animation:jr-scan 1.1s linear infinite; margin-bottom:10px;
+    }
+    @keyframes jr-scan{ 0%{opacity:0.2;} 50%{opacity:1;} 100%{opacity:0.2;} }
+  
+    @media (max-width:640px){
+      .jr-body{ flex-direction:column; }
+      .jr-side{ width:100%; border-right:none; border-bottom:1px solid var(--line); }
+    }
+  </style>
+  
+  <div id="jr-root">
+    <div class="jr-ticker-wrap">
+      <div class="jr-ticker mono" id="jr-ticker-text">SCANNING · LOADING TARGETS ···</div>
+    </div>
+    <div class="jr-header">
+      <div>
+        <div class="jr-title"><span class="blip">●</span> JOB RADAR <span style="color:var(--text-dim); font-weight:400;">// SWE SCANNER</span></div>
+        <div class="jr-sub">public greenhouse &amp; lever boards · you review &amp; submit every application yourself</div>
+      </div>
+      <button class="jr-btn" id="jr-refresh">▸ SCAN NOW</button>
+    </div>
+  
+    <div class="jr-body">
+      <div class="jr-side">
+        <h4>Target Companies</h4>
+        <div id="jr-company-list"></div>
+        <div class="jr-add-row">
+          <input type="text" id="jr-new-name" placeholder="Name" style="flex:1.2;">
+          <input type="text" id="jr-new-token" placeholder="board slug" style="flex:1;">
+          <select id="jr-new-platform"><option value="greenhouse">GH</option><option value="lever">Lever</option></select>
+        </div>
+        <button class="jr-btn secondary" id="jr-add-company" style="width:100%; margin-top:6px;">+ add target</button>
+  
+        <h4 style="margin-top:22px;">Mega-cap Watchlist <span style="color:var(--text-dim); text-transform:none; letter-spacing:0;">(manual check)</span></h4>
+        <div id="jr-megacap-list"></div>
+        <div style="font-size:10px; color:var(--text-dim); margin-top:8px; line-height:1.5; font-family:'IBM Plex Mono',monospace;">
+          These don't expose a public API like Greenhouse/Lever — can't be auto-scanned. Links jump straight to their live, filtered search results.
+        </div>
+  
+        <h4 style="margin-top:22px;">Your Profile</h4>
+        <textarea class="jr-profile" id="jr-profile" placeholder="Paste a short summary of your background — used to draft tailored pitches"></textarea>
+        <button class="jr-btn secondary" id="jr-save-profile" style="width:100%; margin-top:6px;">save profile</button>
+      </div>
+  
+      <div class="jr-main">
+        <div class="jr-controls">
+          <input type="text" id="jr-filter" placeholder="filter by keyword, location...">
+          <label class="jr-check"><input type="checkbox" id="jr-junior-only" checked> entry-level / 1–3 yrs only</label>
+          <span class="jr-stat" id="jr-stat">no scan yet</span>
+        </div>
+        <div class="jr-chips" id="jr-category-chips"></div>
+        <div id="jr-scan-indicator" style="display:none;" class="jr-scan-line"></div>
+        <div id="jr-results"><div class="jr-empty">Press SCAN NOW to pull live openings from your target companies.<br>Matches for software / backend / frontend / ML / infra roles will appear here.</div></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  (async function(){
+    const DEFAULT_COMPANIES = [
+      {name:'Airbnb', platform:'greenhouse', token:'airbnb'},
+      {name:'Stripe', platform:'greenhouse', token:'stripe'},
+      {name:'Coinbase', platform:'greenhouse', token:'coinbase'},
+      {name:'DoorDash', platform:'greenhouse', token:'doordash'},
+      {name:'Robinhood', platform:'greenhouse', token:'robinhood'},
+      {name:'Databricks', platform:'greenhouse', token:'databricks'},
+      {name:'Notion', platform:'greenhouse', token:'notion'},
+      {name:'Figma', platform:'greenhouse', token:'figma'},
+      {name:'Reddit', platform:'greenhouse', token:'reddit'},
+      {name:'Discord', platform:'greenhouse', token:'discord'},
+      {name:'Anthropic', platform:'greenhouse', token:'anthropic'},
+      {name:'Rippling', platform:'lever', token:'rippling'},
+    ];
+  
+    const SWE_KEYWORDS = ['software engineer','swe','sde','backend','back end','frontend','front end',
+      'full stack','fullstack','machine learning engineer','ml engineer','platform engineer',
+      'infrastructure','site reliability','data engineer','systems engineer','ai engineer',
+      'artificial intelligence engineer','deep learning engineer'];
+  
+    const SENIOR_TITLE_FLAGS = ['senior','sr.','sr ','staff','principal','lead ',' lead','director',
+      'head of','vp ','vice president','architect','manager','distinguished'];
+  
+    const CATEGORIES = [
+      {key:'frontend', label:'Frontend', test:t => /front[\s-]?end|react|ui engineer/.test(t)},
+      {key:'backend', label:'Backend', test:t => /back[\s-]?end|platform engineer|infrastructure|site reliability/.test(t)},
+      {key:'fullstack', label:'Full Stack', test:t => /full[\s-]?stack/.test(t)},
+      {key:'ml', label:'Machine Learning', test:t => /machine learning|ml engineer|deep learning/.test(t)},
+      {key:'ai', label:'AI Engineer', test:t => /\bai engineer\b|artificial intelligence engineer/.test(t)},
+      {key:'swe', label:'Software Engineer', test:t => /software engineer|\bswe\b|\bsde\b|systems engineer/.test(t)},
+    ];
+    let activeCategories = new Set(CATEGORIES.map(c=>c.key));
+  
+    const MEGACAP_WATCHLIST = [
+      {name:'Google', url:'https://www.google.com/about/careers/applications/jobs/results?q=software%20engineer&target_level=EARLY'},
+      {name:'Amazon', url:'https://www.amazon.jobs/en/search?base_query=software+development+engineer'},
+      {name:'Meta', url:'https://www.metacareers.com/jobs?q=software%20engineer'},
+      {name:'Microsoft', url:'https://apply.careers.microsoft.com/careers?filter_profession=software+engineering'},
+      {name:'Netflix', url:'https://explore.jobs.netflix.net/careers?query=engineer&domain=netflix.com&sort_by=relevance'},
+    ];
+  
+    function renderMegacapList(){
+      const el = document.getElementById('jr-megacap-list');
+      el.innerHTML = '';
+      MEGACAP_WATCHLIST.forEach(m => {
+        const row = document.createElement('div');
+        row.className = 'jr-mega-row';
+        row.innerHTML = `<span>${m.name}</span><a href="${m.url}" target="_blank" rel="noopener">↗ check openings</a>`;
+        el.appendChild(row);
+      });
+    }
+  
+    function classifyCategory(title){
+      const t = title.toLowerCase();
+      for(const c of CATEGORIES){ if(c.test(t)) return c.key; }
+      return 'swe';
+    }
+  
+    // Returns {isSenior:boolean, years:number|null}
+    function estimateExperience(title, description){
+      const t = title.toLowerCase();
+      if(SENIOR_TITLE_FLAGS.some(f => t.includes(f))){
+        return {isSenior:true, years:null, reason:'title'};
+      }
+      const text = (description||'').toLowerCase();
+      const matches = [...text.matchAll(/(\d+)\s*\+?\s*(?:-|to)?\s*\d*\s*years?/g)];
+      let maxYears = null;
+      matches.forEach(m => {
+        const n = parseInt(m[1]);
+        if(!isNaN(n) && (maxYears === null || n > maxYears)) maxYears = n;
+      });
+      if(maxYears !== null && maxYears >= 5){
+        return {isSenior:true, years:maxYears, reason:'years'};
+      }
+      return {isSenior:false, years:maxYears, reason:null};
+    }
+  
+    function renderCategoryChips(){
+      const el = document.getElementById('jr-category-chips');
+      el.innerHTML = '';
+      CATEGORIES.forEach(c => {
+        const chip = document.createElement('div');
+        chip.className = 'jr-chip' + (activeCategories.has(c.key) ? ' active' : '');
+        chip.textContent = c.label;
+        chip.dataset.key = c.key;
+        chip.addEventListener('click', () => {
+          if(activeCategories.has(c.key)) activeCategories.delete(c.key);
+          else activeCategories.add(c.key);
+          renderCategoryChips();
+          renderResults();
+        });
+        el.appendChild(chip);
+      });
+    }
+  
+    const DEFAULT_PROFILE = `Software Engineer at StarLab Capital working on quantitative finance and algorithmic trading systems. Stack: Python, FastAPI, React, AWS (EC2, Lambda, SageMaker, DynamoDB, ECS, CDK), LangChain, TensorFlow, PyTorch, Docker, MLOps. Built a market regime detection + fund allocation system using dual HMMs (trend + volatility) with walk-forward monthly refit. Also built TradeKart (cloud-native swing trading platform), a RAG code-gen system with FAISS, and a brain tumor detection ML app. GitHub: github.com/vikalp026var`;
+  
+    let companies = [];
+    let profile = DEFAULT_PROFILE;
+    let allJobs = [];
+    let appliedSet = new Set();
+  
+    function safeParse(v, fallback){ try{ return JSON.parse(v); }catch(e){ return fallback; } }
+  
+    async function loadState(){
+      try{
+        const c = await window.storage.get('companies');
+        companies = c ? safeParse(c.value, DEFAULT_COMPANIES) : DEFAULT_COMPANIES;
+      }catch(e){ companies = DEFAULT_COMPANIES; }
+      try{
+        const p = await window.storage.get('profile');
+        profile = p ? p.value : DEFAULT_PROFILE;
+      }catch(e){ profile = DEFAULT_PROFILE; }
+      try{
+        const a = await window.storage.get('applied-ids');
+        appliedSet = a ? new Set(safeParse(a.value, [])) : new Set();
+      }catch(e){ appliedSet = new Set(); }
+      document.getElementById('jr-profile').value = profile;
+      renderCompanyList();
+    }
+  
+    async function saveCompanies(){ await window.storage.set('companies', JSON.stringify(companies)); }
+    async function saveApplied(){ await window.storage.set('applied-ids', JSON.stringify([...appliedSet])); }
+  
+    function renderCompanyList(){
+      const el = document.getElementById('jr-company-list');
+      el.innerHTML = '';
+      companies.forEach((c, i) => {
+        const row = document.createElement('div');
+        row.className = 'jr-company-row';
+        row.innerHTML = `<span>${c.name} <span style="color:var(--text-dim)">/${c.platform==='greenhouse'?'gh':'lv'}</span></span>
+          <span><span class="status idle mono" id="jr-status-${i}">·</span> <span class="jr-remove" data-i="${i}">✕</span></span>`;
+        el.appendChild(row);
+      });
+      el.querySelectorAll('.jr-remove').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          const i = parseInt(e.target.dataset.i);
+          companies.splice(i,1);
+          await saveCompanies();
+          renderCompanyList();
+        });
+      });
+    }
+  
+    document.getElementById('jr-add-company').addEventListener('click', async ()=>{
+      const name = document.getElementById('jr-new-name').value.trim();
+      const token = document.getElementById('jr-new-token').value.trim();
+      const platform = document.getElementById('jr-new-platform').value;
+      if(!name || !token) return;
+      companies.push({name, platform, token});
+      await saveCompanies();
+      document.getElementById('jr-new-name').value = '';
+      document.getElementById('jr-new-token').value = '';
+      renderCompanyList();
+    });
+  
+    document.getElementById('jr-save-profile').addEventListener('click', async ()=>{
+      profile = document.getElementById('jr-profile').value;
+      await window.storage.set('profile', profile);
+      const btn = document.getElementById('jr-save-profile');
+      const old = btn.textContent; btn.textContent = 'saved ✓';
+      setTimeout(()=>btn.textContent = old, 1200);
+    });
+  
+    async function fetchGreenhouse(token){
+      const res = await fetch(`https://boards-api.greenhouse.io/v1/boards/${token}/jobs?content=true`);
+      if(!res.ok) throw new Error('greenhouse fetch failed');
+      const data = await res.json();
+      return (data.jobs||[]).map(j => ({
+        id:`gh-${token}-${j.id}`, title:j.title, location:(j.location&&j.location.name)||'—',
+        url:j.absolute_url, company:token, companyDisplay:null,
+        description:(j.content||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,1200)
+      }));
+    }
+  
+    async function fetchLever(token){
+      const res = await fetch(`https://api.lever.co/v0/postings/${token}?mode=json`);
+      if(!res.ok) throw new Error('lever fetch failed');
+      const data = await res.json();
+      return (data||[]).map(j => ({
+        id:`lv-${token}-${j.id}`, title:j.text, location:(j.categories&&j.categories.location)||'—',
+        url:j.hostedUrl, company:token, companyDisplay:null,
+        description:((j.descriptionPlain)||'').slice(0,1200)
+      }));
+    }
+  
+    function matchesSWE(title){
+      const t = title.toLowerCase();
+      return SWE_KEYWORDS.some(k => t.includes(k));
+    }
+  
+    async function scan(){
+      const btn = document.getElementById('jr-refresh');
+      btn.disabled = true; btn.textContent = '▸ SCANNING…';
+      document.getElementById('jr-scan-indicator').style.display = 'block';
+      document.getElementById('jr-stat').textContent = 'scanning targets...';
+      allJobs = [];
+      let okCount = 0, errCount = 0;
+  
+      for(let i=0;i<companies.length;i++){
+        const c = companies[i];
+        const statusEl = document.getElementById(`jr-status-${i}`);
+        try{
+          const jobs = c.platform === 'greenhouse' ? await fetchGreenhouse(c.token) : await fetchLever(c.token);
+          const matched = jobs.filter(j => matchesSWE(j.title)).map(j => {
+            const exp = estimateExperience(j.title, j.description);
+            return {...j, companyDisplay:c.name, category: classifyCategory(j.title), experience: exp};
+          });
+          allJobs = allJobs.concat(matched);
+          if(statusEl){ statusEl.textContent = `${matched.length} found`; statusEl.className = 'status ok mono'; }
+          okCount++;
+        }catch(e){
+          if(statusEl){ statusEl.textContent = 'no data'; statusEl.className = 'status err mono'; }
+          errCount++;
+        }
+      }
+  
+      updateTicker();
+      renderResults();
+      document.getElementById('jr-scan-indicator').style.display = 'none';
+      document.getElementById('jr-stat').innerHTML = `<b>${allJobs.length}</b> matching roles · ${okCount} sources ok${errCount?`, ${errCount} unreachable`:''}`;
+      btn.disabled = false; btn.textContent = '▸ SCAN NOW';
+    }
+  
+    function updateTicker(){
+      const t = document.getElementById('jr-ticker-text');
+      if(allJobs.length === 0){ t.innerHTML = 'NO MATCHES ON LAST SCAN · TRY WIDENING TARGET LIST'; return; }
+      t.innerHTML = allJobs.slice(0,20).map(j => `<span>${j.companyDisplay.toUpperCase()} · <span class="hot">${j.title}</span></span>`).join('');
+    }
+  
+    function renderResults(){
+      const filterVal = document.getElementById('jr-filter').value.toLowerCase().trim();
+      const juniorOnly = document.getElementById('jr-junior-only').checked;
+      const container = document.getElementById('jr-results');
+      let jobs = allJobs;
+      if(filterVal){
+        jobs = jobs.filter(j => (j.title+' '+j.location+' '+j.companyDisplay).toLowerCase().includes(filterVal));
+      }
+      if(juniorOnly){
+        jobs = jobs.filter(j => !j.experience || !j.experience.isSenior);
+      }
+      jobs = jobs.filter(j => activeCategories.has(j.category));
+      if(jobs.length === 0){
+        container.innerHTML = `<div class="jr-empty">No matches with current filters.<br>Try unchecking "entry-level only", widening categories, or adding more target companies.</div>`;
+        return;
+      }
+      container.innerHTML = '';
+      jobs.forEach(j => {
+        const applied = appliedSet.has(j.id);
+        const catLabel = (CATEGORIES.find(c=>c.key===j.category)||{}).label || 'SWE';
+        const expBadge = j.experience && j.experience.years ? `<span class="jr-badge">~${j.experience.years}+ yrs mentioned</span>` : '';
+        const card = document.createElement('div');
+        card.className = 'jr-card' + (applied ? ' applied' : '');
+        card.innerHTML = `
+          <div class="jr-card-top">
+            <div>
+              <div class="jr-job-title">${j.title}${expBadge}</div>
+              <div class="jr-job-meta">${j.companyDisplay.toUpperCase()} · ${catLabel}<span class="loc">${j.location}</span></div>
+            </div>
+          </div>
+          <div class="jr-card-actions">
+            <a class="jr-link" href="${j.url}" target="_blank" rel="noopener">↗ open posting</a>
+            <button class="jr-btn secondary jr-gen" data-id="${j.id}">draft tailored pitch</button>
+            ${applied ? '<span class="jr-applied-tag">✓ applied</span>' : `<button class="jr-btn secondary jr-mark" data-id="${j.id}">mark applied</button>`}
+          </div>
+          <div class="jr-draft-slot"></div>
+        `;
+        container.appendChild(card);
+      });
+  
+      container.querySelectorAll('.jr-mark').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          appliedSet.add(e.target.dataset.id);
+          await saveApplied();
+          renderResults();
+        });
+      });
+  
+      container.querySelectorAll('.jr-gen').forEach(btn=>{
+        btn.addEventListener('click', async (e)=>{
+          const id = e.target.dataset.id;
+          const job = allJobs.find(x=>x.id===id);
+          const slot = e.target.closest('.jr-card').querySelector('.jr-draft-slot');
+          e.target.disabled = true;
+          const oldText = e.target.textContent;
+          e.target.textContent = 'drafting…';
+          try{
+            const draft = await window.storage.get(`draft-${id}`).catch(()=>null);
+            let text = draft ? draft.value : null;
+            if(!text){
+              text = await generatePitch(job);
+              await window.storage.set(`draft-${id}`, text);
+            }
+            slot.innerHTML = `<div class="jr-draft"><div class="jr-draft-label">tailored pitch — review &amp; edit before use</div>${text}</div>`;
+          }catch(err){
+            slot.innerHTML = `<div class="jr-draft" style="color:var(--red)">Couldn't generate a draft right now. Try again.</div>`;
+          }
+          e.target.disabled = false;
+          e.target.textContent = oldText;
+        });
+      });
+    }
+  
+    async function generatePitch(job){
+      const prompt = `You are helping an early/mid-career candidate (1-3 years experience) write an application that is likely to pass ATS keyword screening and stand out to a human reviewer for a ${job.category || 'software engineering'} role.
+  Candidate background: ${profile}
+  
+  Target role: ${job.title} at ${job.companyDisplay}
+  Job description excerpt: ${job.description || '(no description available)'}
+  
+  Write:
+  1. Three resume bullet points, each starting with a strong action verb, containing a concrete metric or scale where possible, and reusing exact keywords/tech terms found in the job description excerpt above (for ATS matching) — without fabricating experience the candidate doesn't have.
+  2. A 3-sentence cover letter opening paragraph that names one specific thing about this role/team and ties it directly to one concrete project from the candidate's background.
+  Keep it concrete, no fluff, no generic phrases like "I am excited to apply." Plain text only, no markdown headers.`;
+  
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 500,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await response.json();
+      const text = (data.content || []).map(b => b.text || '').join('\n').trim();
+      return text || 'No draft returned — try again.';
+    }
+  
+    document.getElementById('jr-refresh').addEventListener('click', scan);
+    document.getElementById('jr-filter').addEventListener('input', renderResults);
+    document.getElementById('jr-junior-only').addEventListener('change', renderResults);
+  
+    renderCategoryChips();
+    renderMegacapList();
+    await loadState();
+  })();
+  </script>
